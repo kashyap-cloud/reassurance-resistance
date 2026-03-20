@@ -29,6 +29,19 @@ interface SessionState {
 
 const ExerciseController: React.FC = () => {
   const [screen, setScreen] = useState<Screen>('welcome');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const transitionTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  const navigate = useCallback((next: Screen) => {
+    setIsTransitioning(true);
+    if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
+    transitionTimeout.current = setTimeout(() => {
+      setScreen(next);
+      setIsTransitioning(false);
+    }, 250);
+  }, []);
+
+  useEffect(() => () => { if (transitionTimeout.current) clearTimeout(transitionTimeout.current); }, []);
   const [sessionData, setSessionData] = useState<SessionState>({
     worryText: '',
     urgeType: '',

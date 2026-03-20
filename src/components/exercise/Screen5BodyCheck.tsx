@@ -68,9 +68,9 @@ const Screen5BodyCheck: React.FC<Screen5Props> = ({ onNext }) => {
               key={area.id}
               onClick={() => toggleArea(area.id)}
               className={`absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-300 flex items-center justify-center text-xs font-semibold ${
-                selected.includes(area.id)
-                  ? 'bg-primary/30 border-2 border-primary text-primary w-16 h-16'
-                  : 'bg-accent/40 border border-border text-muted-foreground w-14 h-14 hover:bg-accent/60'
+                isSelected(area.id)
+                  ? 'bg-primary/30 border-2 border-primary text-primary w-14 h-14'
+                  : 'bg-accent/40 border border-border text-muted-foreground w-12 h-12 hover:bg-accent/60'
               }`}
               style={{ top: area.top, left: area.left }}
             >

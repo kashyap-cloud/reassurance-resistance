@@ -14,7 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      exercise_sessions: {
+        Row: {
+          body_areas: string[] | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_completed: boolean
+          mood_emoji: string | null
+          naming_response: string | null
+          next_time_goal: string | null
+          reassurance_urge_type: string | null
+          reflection_note: string | null
+          timer_duration: number | null
+          worry_text: string | null
+        }
+        Insert: {
+          body_areas?: string[] | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          mood_emoji?: string | null
+          naming_response?: string | null
+          next_time_goal?: string | null
+          reassurance_urge_type?: string | null
+          reflection_note?: string | null
+          timer_duration?: number | null
+          worry_text?: string | null
+        }
+        Update: {
+          body_areas?: string[] | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_completed?: boolean
+          mood_emoji?: string | null
+          naming_response?: string | null
+          next_time_goal?: string | null
+          reassurance_urge_type?: string | null
+          reflection_note?: string | null
+          timer_duration?: number | null
+          worry_text?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

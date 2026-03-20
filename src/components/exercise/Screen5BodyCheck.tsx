@@ -10,7 +10,8 @@ const bodyAreas = [
   { id: 'shoulders', label: 'Shoulders', top: '25%', left: '50%' },
   { id: 'chest', label: 'Chest', top: '38%', left: '50%' },
   { id: 'stomach', label: 'Stomach', top: '52%', left: '50%' },
-  { id: 'hands', label: 'Hands', top: '60%', left: '50%' },
+  { id: 'hands-left', label: 'Hands', top: '56%', left: '12%' },
+  { id: 'hands-right', label: 'Hands', top: '56%', left: '88%' },
 ];
 
 const Screen5BodyCheck: React.FC<Screen5Props> = ({ onNext }) => {

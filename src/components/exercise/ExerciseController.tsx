@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import Screen1Welcome from './Screen1Welcome';
@@ -29,6 +29,19 @@ interface SessionState {
 
 const ExerciseController: React.FC = () => {
   const [screen, setScreen] = useState<Screen>('welcome');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const transitionTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  const navigate = useCallback((next: Screen) => {
+    setIsTransitioning(true);
+    if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
+    transitionTimeout.current = setTimeout(() => {
+      setScreen(next);
+      setIsTransitioning(false);
+    }, 250);
+  }, []);
+
+  useEffect(() => () => { if (transitionTimeout.current) clearTimeout(transitionTimeout.current); }, []);
   const [sessionData, setSessionData] = useState<SessionState>({
     worryText: '',
     urgeType: '',
@@ -77,90 +90,100 @@ const ExerciseController: React.FC = () => {
       reflectionNote: '',
       nextGoal: '',
     });
-    setScreen('welcome');
+    navigate('welcome');
   };
 
-  switch (screen) {
-    case 'welcome':
-      return <Screen1Welcome onNext={() => setScreen('whats-happening')} onBack={() => {}} />;
-    case 'whats-happening':
-      return (
-        <Screen2WhatsHappening
-          onNext={(worry, urge) => {
-            update({ worryText: worry, urgeType: urge });
-            setScreen('breathing');
-          }}
-        />
-      );
-    case 'breathing':
-      return <Screen3Breathing onNext={() => setScreen('name-it')} />;
-    case 'name-it':
-      return (
-        <Screen4NameIt
-          onNext={(response) => {
-            update({ namingResponse: response });
-            setScreen('body-check');
-          }}
-        />
-      );
-    case 'body-check':
-      return (
-        <Screen5BodyCheck
-          onNext={(areas) => {
-            update({ bodyAreas: areas });
-            setScreen('the-wait');
-          }}
-        />
-      );
-    case 'the-wait':
-      return (
-        <Screen6TheWait
-          onNext={(duration) => {
-            update({ timerDuration: duration });
-            setScreen('during-wait');
-          }}
-        />
-      );
-    case 'during-wait':
-      return <Screen7DuringWait onNext={() => setScreen('reflection')} />;
-    case 'reflection':
-      return (
-        <Screen8Reflection
-          onNext={(emoji, note) => {
-            update({ moodEmoji: emoji, reflectionNote: note });
-            setScreen('build-habit');
-          }}
-        />
-      );
-    case 'build-habit':
-      return (
-        <Screen9BuildHabit
-          onNext={(goal) => {
-            update({ nextGoal: goal });
-            setScreen('save-session');
-          }}
-        />
-      );
-    case 'save-session':
-      return (
-        <Screen9BSaveSession
-          sessionData={sessionData}
-          onSave={saveSession}
-          onSkip={() => setScreen('closing')}
-        />
-      );
-    case 'closing':
-      return (
-        <Screen10Closing
-          onViewProgress={() => setScreen('dashboard')}
-          onComplete={resetAndStart}
-        />
-      );
-    case 'dashboard':
-      return <ProgressDashboard onBack={resetAndStart} />;
-    default:
-      return null;
-  }
+  const renderScreen = () => {
+    switch (screen) {
+      case 'welcome':
+        return <Screen1Welcome onNext={() => navigate('whats-happening')} onBack={() => {}} />;
+      case 'whats-happening':
+        return (
+          <Screen2WhatsHappening
+            onNext={(worry, urge) => {
+              update({ worryText: worry, urgeType: urge });
+              navigate('breathing');
+            }}
+          />
+        );
+      case 'breathing':
+        return <Screen3Breathing onNext={() => navigate('name-it')} />;
+      case 'name-it':
+        return (
+          <Screen4NameIt
+            onNext={(response) => {
+              update({ namingResponse: response });
+              navigate('body-check');
+            }}
+          />
+        );
+      case 'body-check':
+        return (
+          <Screen5BodyCheck
+            onNext={(areas) => {
+              update({ bodyAreas: areas });
+              navigate('the-wait');
+            }}
+          />
+        );
+      case 'the-wait':
+        return (
+          <Screen6TheWait
+            onNext={(duration) => {
+              update({ timerDuration: duration });
+              navigate('during-wait');
+            }}
+          />
+        );
+      case 'during-wait':
+        return <Screen7DuringWait onNext={() => navigate('reflection')} />;
+      case 'reflection':
+        return (
+          <Screen8Reflection
+            onNext={(emoji, note) => {
+              update({ moodEmoji: emoji, reflectionNote: note });
+              navigate('build-habit');
+            }}
+          />
+        );
+      case 'build-habit':
+        return (
+          <Screen9BuildHabit
+            onNext={(goal) => {
+              update({ nextGoal: goal });
+              navigate('save-session');
+            }}
+          />
+        );
+      case 'save-session':
+        return (
+          <Screen9BSaveSession
+            sessionData={sessionData}
+            onSave={saveSession}
+            onSkip={() => navigate('closing')}
+          />
+        );
+      case 'closing':
+        return (
+          <Screen10Closing
+            onViewProgress={() => navigate('dashboard')}
+            onComplete={resetAndStart}
+          />
+        );
+      case 'dashboard':
+        return <ProgressDashboard onBack={resetAndStart} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div
+      className={`transition-opacity duration-250 ease-in-out ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}
+    >
+      {renderScreen()}
+    </div>
+  );
 };
 
 export default ExerciseController;

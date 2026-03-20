@@ -10,16 +10,24 @@ const bodyAreas = [
   { id: 'shoulders', label: 'Shoulders', top: '25%', left: '50%' },
   { id: 'chest', label: 'Chest', top: '38%', left: '50%' },
   { id: 'stomach', label: 'Stomach', top: '52%', left: '50%' },
-  { id: 'hands', label: 'Hands', top: '60%', left: '50%' },
+  { id: 'hands-left', label: 'Hands', top: '56%', left: '12%' },
+  { id: 'hands-right', label: 'Hands', top: '56%', left: '88%' },
 ];
 
 const Screen5BodyCheck: React.FC<Screen5Props> = ({ onNext }) => {
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleArea = (id: string) => {
+    // Treat both hands as a single "hands" selection
+    const normalizedId = id.startsWith('hands') ? 'hands' : id;
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
+      prev.includes(normalizedId) ? prev.filter((a) => a !== normalizedId) : [...prev, normalizedId]
     );
+  };
+
+  const isSelected = (id: string) => {
+    const normalizedId = id.startsWith('hands') ? 'hands' : id;
+    return selected.includes(normalizedId);
   };
 
   return (
@@ -60,9 +68,9 @@ const Screen5BodyCheck: React.FC<Screen5Props> = ({ onNext }) => {
               key={area.id}
               onClick={() => toggleArea(area.id)}
               className={`absolute transform -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-300 flex items-center justify-center text-xs font-semibold ${
-                selected.includes(area.id)
-                  ? 'bg-primary/30 border-2 border-primary text-primary w-16 h-16'
-                  : 'bg-accent/40 border border-border text-muted-foreground w-14 h-14 hover:bg-accent/60'
+                isSelected(area.id)
+                  ? 'bg-primary/30 border-2 border-primary text-primary w-14 h-14'
+                  : 'bg-accent/40 border border-border text-muted-foreground w-12 h-12 hover:bg-accent/60'
               }`}
               style={{ top: area.top, left: area.left }}
             >

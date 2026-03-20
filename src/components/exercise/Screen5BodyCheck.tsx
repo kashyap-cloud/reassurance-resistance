@@ -18,9 +18,16 @@ const Screen5BodyCheck: React.FC<Screen5Props> = ({ onNext }) => {
   const [selected, setSelected] = useState<string[]>([]);
 
   const toggleArea = (id: string) => {
+    // Treat both hands as a single "hands" selection
+    const normalizedId = id.startsWith('hands') ? 'hands' : id;
     setSelected((prev) =>
-      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
+      prev.includes(normalizedId) ? prev.filter((a) => a !== normalizedId) : [...prev, normalizedId]
     );
+  };
+
+  const isSelected = (id: string) => {
+    const normalizedId = id.startsWith('hands') ? 'hands' : id;
+    return selected.includes(normalizedId);
   };
 
   return (
